@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import { Book } from "./models/bookModel.js";
 
 const app = express();
+//middleware for parsing json
 app.use(express.json());
 
 app.get("/",(request,response)=>{
@@ -11,6 +12,7 @@ app.get("/",(request,response)=>{
     return response.status(200).send('Welcome to mern stack tutorial');
 })
 
+//post request to add book to database
 app.post('/books',async (request,response)=>{
     try {
         if(!request.body.title || !request.body.author || !request.body.publishYear){
@@ -24,6 +26,20 @@ app.post('/books',async (request,response)=>{
         const book = await Book.create(newBook);
         return response.status(201).send(book);
         
+    } catch (error) {
+        console.log(error.message);
+        return response.status(500).send({message:error.message});
+    }
+})
+
+//get request to get all books from database
+app.get('/books', async (request,response)=>{
+    try {
+        const books = await Book.find({});
+        return response.status(200).json({
+            count:books.length,
+            data:books
+        });
     } catch (error) {
         console.log(error.message);
         return response.status(500).send({message:error.message});
